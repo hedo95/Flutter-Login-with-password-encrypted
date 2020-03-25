@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_password_encrypted/logic/BO/BO.dart';
 import 'package:login_password_encrypted/logic/DAO/DAO.dart';
 import 'package:login_password_encrypted/logic/models/customer.dart';
+import 'package:login_password_encrypted/logic/models/mysql.dart';
 import 'package:provider/provider.dart';
 
 import 'newcustomer.dart';
@@ -130,11 +131,21 @@ class _LoginState extends State<Login> {
                   .push(MaterialPageRoute(builder: (context) => Newcustomer()))
                   .then((newcustomer) {
                 if (newcustomer != null) {
-                  dao.insertCustomer(newcustomer as Customer);
-                  int id = dao.getidfromCustomer(newcustomer as Customer);
-                  newcustomer.id = id;
-                  setState(() {
-                    customers.add(newcustomer);
+                  dao.insertCustomer(newcustomer as Customer).then((_) {
+                    dao.db.getConnection().then((conn) {
+                      String sql =
+                          'select id from company.customer where username = ?;';
+                      conn.query(sql, [newcustomer.username]).then((results) {
+                        for (var row in results) {
+                          int id = row[0];
+                          newcustomer.id = id;
+                          setState(() {
+                            customers.add(newcustomer);
+                          });
+                        }
+                        conn.close();
+                      });
+                    });
                   });
                 }
               });
@@ -148,7 +159,9 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    customers = Provider.of<List<Customer>>(context);
+    if (customers.isEmpty) {
+      customers = Provider.of<List<Customer>>(context);
+    }
     return Scaffold(
         appBar: AppBar(
           title: Text('Login'),

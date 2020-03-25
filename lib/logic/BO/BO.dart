@@ -34,13 +34,13 @@ void openDialog(
 Widget textfield(
     String labeltext, TextEditingController controller, bool obscureText,
     {bool validate, bool outlineBorder = false}) {
-      InputDecoration inputDecoration;
+  InputDecoration inputDecoration;
   if (validate != null && outlineBorder == false) {
     inputDecoration = InputDecoration(
       labelText: labeltext,
       errorText: validate ? null : 'Field can\'t be empty',
     );
-  } else if (validate != null && outlineBorder == true){
+  } else if (validate != null && outlineBorder == true) {
     inputDecoration = InputDecoration(
       labelText: labeltext,
       border: OutlineInputBorder(),
@@ -56,13 +56,12 @@ Widget textfield(
       border: OutlineInputBorder(),
     );
   }
-    return TextField(
-      obscureText: obscureText,
-      decoration: inputDecoration,
-      controller: controller,
-    );
-  }
-
+  return TextField(
+    obscureText: obscureText,
+    decoration: inputDecoration,
+    controller: controller,
+  );
+}
 
 Widget longButton(Function onPressed, String textButton,
     {List<Customer> customers}) {

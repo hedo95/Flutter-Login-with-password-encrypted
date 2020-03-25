@@ -29,7 +29,6 @@ class _NewcustomerState extends State<Newcustomer> {
     }
   }
 
-
   Widget button(String buttonText) {
     {
       return Container(
@@ -59,8 +58,8 @@ class _NewcustomerState extends State<Newcustomer> {
                   validate3 == true &&
                   validate4 == true &&
                   validate5 == true) {
-                widget.customer = new Customer(
-                    username, name, lastname, mail, password);
+                widget.customer =
+                    new Customer(username, name, lastname, mail, password);
                 Navigator.of(context).pop(widget.customer);
               }
             },
@@ -122,7 +121,9 @@ class _NewcustomerState extends State<Newcustomer> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: isDefault(widget.customer) ? new Text('New customer') : new Text('Update customer'),
+          title: isDefault(widget.customer)
+              ? new Text('New customer')
+              : new Text('Update customer'),
         ),
         body: Center(child: _inputData(context)));
   }

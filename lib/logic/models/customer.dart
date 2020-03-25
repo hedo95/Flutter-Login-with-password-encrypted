@@ -5,16 +5,18 @@ class Customer {
   String username, name, lastname, mail, hash;
   PBKDF2 algorithm;
 
-  Customer(this.username, this.name, this.lastname, this.mail, String password){
+  Customer(
+      this.username, this.name, this.lastname, this.mail, String password) {
     algorithm = new PBKDF2();
     hash = Password.hash(password, algorithm);
-  } 
+  }
 
-  Customer.db(this.id, this.username, this.name, this.lastname, this.mail, this.hash) {
+  Customer.db(
+      this.id, this.username, this.name, this.lastname, this.mail, this.hash) {
     algorithm = new PBKDF2();
   }
 
-  Customer.def(){
+  Customer.def() {
     id = null;
     username = '';
     name = '';
@@ -24,7 +26,7 @@ class Customer {
     algorithm = new PBKDF2();
   }
 
-  bool passwordVerify(String password){
-    return Password.verify(password,hash);
+  bool passwordVerify(String password) {
+    return Password.verify(password, hash);
   }
 }

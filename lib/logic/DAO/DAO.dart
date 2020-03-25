@@ -5,7 +5,7 @@ import 'package:login_password_encrypted/logic/models/mysql.dart';
 /// Here we got the connection between the app and the database
 
 class DAO {
-  static Mysql db = new Mysql();
+  Mysql db = new Mysql();
 
   DAO();
 
@@ -44,28 +44,5 @@ class DAO {
         conn.close();
       });
     });
-  }
-
-  int getidfromCustomer(Customer customer) {
-    int id = -1;
-    db.getConnection().then((conn) {
-      String sql = 'select id from company.customer where username = ?;';
-      conn.query(sql, [
-        customer.username,
-        customer.name,
-        customer.lastname,
-        customer.mail,
-        customer.hash
-      ]).then((results) {
-        for (var row in results) {
-          id = row[0];
-        }
-      }, onError: (error) {
-        print('$error');
-      }).whenComplete(() {
-        conn.close();
-      });
-    });
-    return id;
   }
 }
