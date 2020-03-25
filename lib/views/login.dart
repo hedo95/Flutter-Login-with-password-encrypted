@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:login_password_encrypted/logic/BO/BO.dart';
+import 'package:login_password_encrypted/logic/DAO/DAO.dart';
 import 'package:login_password_encrypted/logic/models/customer.dart';
 import 'package:provider/provider.dart';
 
@@ -11,27 +13,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController nameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool hidePassword = true;
-
-  void openDialog(BuildContext context, String dialogContent) {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: new Text('Invalid data'),
-            content: new Text(dialogContent),
-            actions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text('Back'))
-            ],
-          );
-        });
-  }
+  List<Customer> customers = [];
+  var dao = new DAO();
 
   Widget titleContainer(String title) {
     return Container(
@@ -67,9 +53,7 @@ class _LoginState extends State<Login> {
   }
 
   Widget passwordTextfield(TextEditingController controller) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-      child: TextField(
+    return TextField(
         obscureText: hidePassword,
         controller: controller,
         decoration: InputDecoration(
@@ -82,9 +66,7 @@ class _LoginState extends State<Login> {
                   setState(() {
                     hidePassword = !hidePassword;
                   });
-                })),
-      ),
-    );
+                })));
   }
 
   Widget forgotPasswordButton() {
@@ -97,7 +79,27 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Widget loginButton() {
+  loginbuttononPressed() {
+    if (customers.any((item) => item.username == usernameController.text)) {
+      Customer customer = customers
+          .firstWhere((item) => item.username == usernameController.text);
+      if (customer.passwordVerify(passwordController.text)) {
+        // Login App, you're in!
+        openDialog(context, 'User detected',
+            "You're in! App gets started here with the current user");
+      } else {
+        // Incorrect password
+        openDialog(context, 'Invalid data', 'Your password is not correct');
+      }
+    } else {
+      // User does not exist
+      openDialog(context, 'Invalid data', 'Make sure your username is correct');
+    }
+    print(usernameController.text);
+    print(passwordController.text);
+  }
+
+  Widget loginButton(List<Customer> customers) {
     return Container(
         height: 50,
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
@@ -107,10 +109,7 @@ class _LoginState extends State<Login> {
             'Login',
             style: TextStyle(fontSize: 18),
           ),
-          onPressed: () {
-            print(nameController.text);
-            print(passwordController.text);
-          },
+          onPressed: () {},
         ));
   }
 
@@ -119,16 +118,28 @@ class _LoginState extends State<Login> {
         child: Row(
       children: <Widget>[
         Text('Does not have account?'),
-        FlatButton(
-          textColor: Colors.orange,
-          child: Text(
-            'Sign up',
-            style: TextStyle(fontSize: 20),
+        InkWell(
+          child: FlatButton(
+            textColor: Colors.orange,
+            child: Text(
+              'Sign up',
+              style: TextStyle(fontSize: 20),
+            ),
+            onPressed: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (context) => Newcustomer()))
+                  .then((newcustomer) {
+                if (newcustomer != null) {
+                  dao.insertCustomer(newcustomer as Customer);
+                  int id = dao.getidfromCustomer(newcustomer as Customer);
+                  newcustomer.id = id;
+                  setState(() {
+                    customers.add(newcustomer);
+                  });
+                }
+              });
+            },
           ),
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => Newcustomer()));
-          },
         )
       ],
       mainAxisAlignment: MainAxisAlignment.center,
@@ -137,20 +148,23 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    customers = Provider.of<List<Customer>>(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Login'),
         ),
         body: Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.all(20),
             child: ListView(
               children: <Widget>[
                 titleContainer('Company'),
                 loginContainer(),
-                usernameTextfield(nameController),
+                textfield('User name', usernameController, false,
+                    outlineBorder: true),
+                SizedBox(height: 20),
                 passwordTextfield(passwordController),
                 forgotPasswordButton(),
-                loginButton(), // kldj-34gb-gj89-45gd
+                longButton(loginbuttononPressed, 'Login', customers: customers),
                 signupButton()
               ],
             )));

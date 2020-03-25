@@ -29,17 +29,6 @@ class _NewcustomerState extends State<Newcustomer> {
     }
   }
 
-  Widget textfield(String labeltext, TextEditingController controller,
-      bool validate, bool obscureText) {
-    return TextField(
-      obscureText: obscureText,
-      decoration: InputDecoration(
-        labelText: labeltext,
-        errorText: validate ? null : 'Field can\'t be empty',
-      ),
-      controller: controller,
-    );
-  }
 
   Widget button(String buttonText) {
     {
@@ -71,8 +60,7 @@ class _NewcustomerState extends State<Newcustomer> {
                   validate4 == true &&
                   validate5 == true) {
                 widget.customer = new Customer(
-                    username, name, lastname, mail, password,
-                    id: widget.customer.id);
+                    username, name, lastname, mail, password);
                 Navigator.of(context).pop(widget.customer);
               }
             },
@@ -88,15 +76,15 @@ class _NewcustomerState extends State<Newcustomer> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          textfield('User name', _controller1, validate1, false),
+          textfield('User name', _controller1, false, validate: validate1),
           SizedBox(height: 10),
-          textfield('Name', _controller2, validate2, false),
+          textfield('Name', _controller2, false, validate: validate2),
           SizedBox(height: 10),
-          textfield('Last name', _controller3, validate3, false),
+          textfield('Last name', _controller3, false, validate: validate3),
           SizedBox(height: 10),
-          textfield('Mail', _controller4, validate4, false),
+          textfield('Mail', _controller4, false, validate: validate3),
           SizedBox(height: 10),
-          textfield('Password', _controller5, validate5, true),
+          textfield('Password', _controller5, true, validate: validate5),
           SizedBox(height: 50),
           isDefault(widget.customer) ? button('Insert') : button('Update'),
         ],
@@ -134,7 +122,7 @@ class _NewcustomerState extends State<Newcustomer> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: new Text('New customer'),
+          title: isDefault(widget.customer) ? new Text('New customer') : new Text('Update customer'),
         ),
         body: Center(child: _inputData(context)));
   }

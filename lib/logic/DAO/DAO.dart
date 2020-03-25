@@ -16,40 +16,55 @@ class DAO {
       conn.query(sql).then((results) {
         for (var row in results) {
           result.add(
-              new Customer(row[1], row[2], row[3], row[4], row[5], id: row[0]));
+              new Customer.db(row[0], row[1], row[2], row[3], row[4], row[5]));
         }
+      }).whenComplete(() {
+        conn.close();
       });
-      conn.close();
     });
     return result;
   }
 
   // Return the id given by database
-  int insertCustomer(Customer customer) {
-    int id = -1;
-    List data = [
-      customer.username,
-      customer.name,
-      customer.lastname,
-      customer.mail,
-      customer.hash
-    ];
+  Future<void> insertCustomer(Customer customer) async {
     db.getConnection().then((conn) {
       String sql =
           'insert into company.customer (username, name, lastname, mail, password) values(?, ?, ?, ?, ?)';
-      conn.query(sql, data).catchError((error) {
+      conn.query(sql, [
+        customer.username,
+        customer.name,
+        customer.lastname,
+        customer.mail,
+        customer.hash
+      ]).then((results) {
+        print('Inserted customer succesfullly');
+      }, onError: (error) {
         print('$error');
+      }).whenComplete(() {
+        conn.close();
       });
-      String sql2 =
-          'select id from company.customer where username = ? and name = ? and lastname = ? and mail = ? and password = ?; ';
-      conn.query(sql2, data).then((results) {
+    });
+  }
+
+  int getidfromCustomer(Customer customer) {
+    int id = -1;
+    db.getConnection().then((conn) {
+      String sql = 'select id from company.customer where username = ?;';
+      conn.query(sql, [
+        customer.username,
+        customer.name,
+        customer.lastname,
+        customer.mail,
+        customer.hash
+      ]).then((results) {
         for (var row in results) {
           id = row[0];
         }
       }, onError: (error) {
         print('$error');
+      }).whenComplete(() {
+        conn.close();
       });
-      conn.close();
     });
     return id;
   }
