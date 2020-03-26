@@ -12,33 +12,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: Stream.fromFuture(dao.getCustomers()),
-      builder: (context, response) {
-        if(!response.hasData){
-          return Center(child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              CircularProgressIndicator()
-            ],
-          ));
-        } else if(response.hasError){
-          return Center(child: Text(response.error));
-        } else {
-          return MultiProvider(
-            providers: [
-              Provider<List<Customer>>.value(value: response.data,)
-            ],
-            child: MaterialApp(
-              title: 'Login Screen',
-              theme: ThemeData(
-                brightness: Brightness.dark,
-                primarySwatch: Colors.orange,
-                accentColor: Colors.orange
-                ),
-                home: Login()
+        stream: Stream.fromFuture(dao.getCustomers()),
+        builder: (context, response) {
+          if (!response.hasData) {
+            return Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[CircularProgressIndicator()],
             ));
-        }
-      }
-    );
+          } else if (response.hasError) {
+            return Center(child: Text(response.error));
+          } else {
+            return MultiProvider(
+                providers: [
+                  Provider<List<Customer>>.value(
+                    value: response.data,
+                  )
+                ],
+                child: MaterialApp(
+                    title: 'Login Screen',
+                    theme: ThemeData(
+                        brightness: Brightness.dark,
+                        primarySwatch: Colors.orange,
+                        accentColor: Colors.orange),
+                    home: Login()));
+          }
+        });
   }
-}  
+}
