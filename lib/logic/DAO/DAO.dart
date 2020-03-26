@@ -18,6 +18,8 @@ class DAO {
           result.add(
               new Customer.db(row[0], row[1], row[2], row[3], row[4], row[5]));
         }
+      }, onError: (error){
+        print('$error');
       }).whenComplete(() {
         conn.close();
       });

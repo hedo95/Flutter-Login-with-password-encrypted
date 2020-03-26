@@ -63,6 +63,19 @@ Widget textfield(
   );
 }
 
+Widget passwordTextBox(TextEditingController controller, bool hidePassword, Function onPressed) {
+  return TextField(
+      obscureText: hidePassword,
+      controller: controller,
+      decoration: InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Password',
+          suffixIcon: IconButton(
+              icon:
+                  Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
+              onPressed: onPressed)));
+}
+
 Widget longButton(Function onPressed, String textButton,
     {List<Customer> customers}) {
   return Container(
@@ -72,6 +85,17 @@ Widget longButton(Function onPressed, String textButton,
           child: Text(
             textButton,
             style: TextStyle(fontSize: 18),
+          ),
+          onPressed: onPressed));
+}
+
+Widget flatButton(String text, {double fontSize = 15, Function onPressed}) {
+  return InkWell(
+      child: FlatButton(
+          textColor: Colors.orange,
+          child: Text(
+            text,
+            style: TextStyle(fontSize: fontSize),
           ),
           onPressed: onPressed));
 }

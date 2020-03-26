@@ -40,36 +40,12 @@ class _LoginState extends State<Login> {
         ));
   }
 
-  Widget usernameTextfield(TextEditingController controller) {
-    return Container(
-      padding: EdgeInsets.all(10),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'User Name',
-        ),
-      ),
-    );
+  passwordiconOnpressed() {
+    setState(() {
+      hidePassword = !hidePassword;
+    });
   }
-
-  Widget passwordTextfield(TextEditingController controller) {
-    return TextField(
-        obscureText: hidePassword,
-        controller: controller,
-        decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Password',
-            suffixIcon: IconButton(
-                icon: Icon(
-                    hidePassword ? Icons.visibility_off : Icons.visibility),
-                onPressed: () {
-                  setState(() {
-                    hidePassword = !hidePassword;
-                  });
-                })));
-  }
-
+  
   Widget forgotPasswordButton() {
     return FlatButton(
       onPressed: () {
@@ -100,61 +76,40 @@ class _LoginState extends State<Login> {
     print(passwordController.text);
   }
 
-  Widget loginButton(List<Customer> customers) {
-    return Container(
-        height: 50,
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: RaisedButton(
-          textColor: Colors.white,
-          child: Text(
-            'Login',
-            style: TextStyle(fontSize: 18),
-          ),
-          onPressed: () {},
-        ));
+  signUponPressed() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => Newcustomer()))
+        .then((newcustomer) {
+      if (newcustomer != null) {
+        dao.insertCustomer(newcustomer as Customer).then((_) {
+          dao.db.getConnection().then((conn) {
+            String sql = 'select id from company.customer where username = ?;';
+            conn.query(sql, [newcustomer.username]).then((results) {
+              for (var row in results) {
+                int id = row[0];
+                newcustomer.id = id;
+                setState(() {
+                  customers.add(newcustomer);
+                });
+              }
+              conn.close();
+            });
+          });
+        });
+      }
+    });
   }
 
-  Widget signupButton() {
+  Widget signupRow() {
     return Container(
-        child: Row(
-      children: <Widget>[
-        Text('Does not have account?'),
-        InkWell(
-          child: FlatButton(
-            textColor: Colors.orange,
-            child: Text(
-              'Sign up',
-              style: TextStyle(fontSize: 20),
-            ),
-            onPressed: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (context) => Newcustomer()))
-                  .then((newcustomer) {
-                if (newcustomer != null) {
-                  dao.insertCustomer(newcustomer as Customer).then((_) {
-                    dao.db.getConnection().then((conn) {
-                      String sql =
-                          'select id from company.customer where username = ?;';
-                      conn.query(sql, [newcustomer.username]).then((results) {
-                        for (var row in results) {
-                          int id = row[0];
-                          newcustomer.id = id;
-                          setState(() {
-                            customers.add(newcustomer);
-                          });
-                        }
-                        conn.close();
-                      });
-                    });
-                  });
-                }
-              });
-            },
-          ),
-        )
-      ],
-      mainAxisAlignment: MainAxisAlignment.center,
-    ));
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text('Does not have account?'),
+          flatButton('Sign Up', fontSize: 18, onPressed: signUponPressed)
+        ],
+      )
+    );
   }
 
   @override
@@ -175,10 +130,10 @@ class _LoginState extends State<Login> {
                 textfield('User name', usernameController, false,
                     outlineBorder: true),
                 SizedBox(height: 20),
-                passwordTextfield(passwordController),
+                passwordTextBox(passwordController, hidePassword, passwordiconOnpressed),
                 forgotPasswordButton(),
                 longButton(loginbuttononPressed, 'Login', customers: customers),
-                signupButton()
+                signupRow(),
               ],
             )));
   }

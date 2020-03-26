@@ -15,11 +15,7 @@ class MyApp extends StatelessWidget {
         stream: Stream.fromFuture(dao.getCustomers()),
         builder: (context, response) {
           if (!response.hasData) {
-            return Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[CircularProgressIndicator()],
-            ));
+            return Center(child: CircularProgressIndicator());
           } else if (response.hasError) {
             return Center(child: Text(response.error));
           } else {
