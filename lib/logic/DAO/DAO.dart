@@ -27,7 +27,6 @@ class DAO {
     return result;
   }
 
-  // Return the id given by database
   Future<void> insertCustomer(Customer customer) async {
     db.getConnection().then((conn) {
       String sql =
