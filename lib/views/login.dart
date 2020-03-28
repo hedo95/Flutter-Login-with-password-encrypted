@@ -62,15 +62,15 @@ class _LoginState extends State<Login> {
           .firstWhere((item) => item.username == usernameController.text);
       if (customer.passwordVerify(passwordController.text)) {
         // Login App, you're in!
-        openDialog(context, 'User detected',
+        openInfoDialog(context, 'User detected',
             "You're in! App gets started here with the current user");
       } else {
         // Incorrect password
-        openDialog(context, 'Invalid data', 'Your password is not correct');
+        openInfoDialog(context, 'Invalid data', 'Your password is not correct');
       }
     } else {
       // User does not exist
-      openDialog(context, 'Invalid data', 'Make sure your username is correct');
+      openInfoDialog(context, 'Invalid data', 'Make sure your username is correct');
     }
     print(usernameController.text);
     print(passwordController.text);
